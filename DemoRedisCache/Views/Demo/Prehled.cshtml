@@ -1,0 +1,25 @@
+﻿@using DemoRedisCache.Controllers
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@{
+    var demoController = typeof(DemoController);
+    var methods = demoController.GetMethods().Where(x => x.DeclaringType == demoController).ToList();
+}
+
+<div>
+    <div class="github">
+        Tento projekt je ke stažení na <a href="https://github.com/mholec/redis-demo">https://github.com/mholec/redis-demo</a>
+    </div>
+
+    <h1>Přehled ukázek</h1>
+    <ol>
+        @foreach (var demo in methods)
+        {
+            <li>
+                @demoController.Name.<a href="@Url.Action(demo.Name)">@demo.Name</a>
+            </li>
+        }
+    </ol>
+</div>
