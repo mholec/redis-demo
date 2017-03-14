@@ -64,7 +64,7 @@ namespace DemoRedisCache.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-	        var redisConnectionString = ConfigurationManager.AppSettings["RediConnectionString"];
+	        var redisConnectionString = ConfigurationManager.AppSettings["RedisConnectionString"];
 
 	        kernel.Bind<ConnectionMultiplexer>().ToMethod(x => ConnectionMultiplexer.Connect(redisConnectionString)).InSingletonScope();
         }        

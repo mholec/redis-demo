@@ -150,6 +150,22 @@ namespace DemoRedisCache.Controllers
         }
 
 		/// <summary>
+		/// Transakce
+		/// </summary>
+		public ActionResult Transakce()
+		{
+			IDatabase redis = _connection.GetDatabase();
+
+			ITransaction transaction = redis.CreateTransaction();
+			transaction.StringSetAsync("klic1", "hodnota1");
+			transaction.AddCondition(Condition.KeyExists("klic1")); // proběhne transakce nebo ne?
+			transaction.StringSetAsync("klic2", "hodnota2");
+			bool result = transaction.Execute();
+
+			return Content(result.ToString());
+		}
+
+		/// <summary>
 		/// Nalezení TOP 3 prvků dle nějakých pravidel
 		/// </summary>
 		public ActionResult Leaderboard()
