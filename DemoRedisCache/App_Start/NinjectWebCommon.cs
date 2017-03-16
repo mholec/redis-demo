@@ -1,4 +1,4 @@
-using System.Configuration;
+﻿using System.Configuration;
 using StackExchange.Redis;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(DemoRedisCache.App_Start.NinjectWebCommon), "Start")]
@@ -66,6 +66,7 @@ namespace DemoRedisCache.App_Start
         {
 	        var redisConnectionString = ConfigurationManager.AppSettings["RedisConnectionString"];
 
+			// !!! Může selhat
 	        kernel.Bind<ConnectionMultiplexer>().ToMethod(x => ConnectionMultiplexer.Connect(redisConnectionString)).InSingletonScope();
         }        
     }
