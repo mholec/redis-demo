@@ -66,8 +66,11 @@ namespace DemoRedisCache.App_Start
         {
 	        var redisConnectionString = ConfigurationManager.AppSettings["RedisConnectionString"];
 
-			// !!! Může selhat
-	        kernel.Bind<ConnectionMultiplexer>().ToMethod(x => ConnectionMultiplexer.Connect(redisConnectionString)).InSingletonScope();
+			ConfigurationOptions options = ConfigurationOptions.Parse(redisConnectionString);
+			options.AbortOnConnectFail = false;
+			options.ConnectRetry = 3;
+			options.ConnectTimeout = 2000;
+			kernel.Bind<ConnectionMultiplexer>().ToMethod(x => ConnectionMultiplexer.Connect(options)).InSingletonScope();
         }        
     }
 }
