@@ -9,6 +9,7 @@ namespace DemoRedisCache.Controllers
     {
 		/// <summary>
 		/// Do not connect to redis this way !!!
+		/// URL: connections
 		/// </summary>
         public ActionResult Connections()
         {
@@ -43,6 +44,7 @@ namespace DemoRedisCache.Controllers
 
 		/// <summary>
 		/// Databases
+		/// URL: databases
 		/// </summary>
 		public ActionResult ConnectionsDb()
 		{

@@ -29,6 +29,7 @@ namespace DemoRedisCache.Controllers
 	        IDatabase redis = _connection.GetDatabase();
 
 	        RedisValue date = redis.StringGet("datum");
+
 	        if (!date.IsNullOrEmpty)
 	        {
 		        DateTime dt = DateTime.Parse(date);
@@ -37,10 +38,10 @@ namespace DemoRedisCache.Controllers
 	        else
 	        {
 		        DateTime dt = DateTime.Now;
-		        redis.StringSet("datum", dt.ToString(), TimeSpan.FromSeconds(10));
+		        bool result = redis.StringSet("datum", dt.ToString(), TimeSpan.FromSeconds(10), When.Always, CommandFlags.FireAndForget);
 				return Content(dt.ToString());
 			}
-        }
+		}
 
 		/// <summary>
 		/// Jednoduchý čítač návštěv pomocí Increment
@@ -52,7 +53,8 @@ namespace DemoRedisCache.Controllers
 			string ip = Request.UserHostAddress;
 			string key = "user:" + ip + ":visits";
 
-			long counter = redis.StringIncrement(key);
+			long counter = redis.StringIncrement(key, 1);
+
 			return Content(counter.ToString());
 		}
 
@@ -213,5 +215,20 @@ namespace DemoRedisCache.Controllers
 
             return Content(Session["testSessionKey"].ToString());
         }
-    }
+
+		public ActionResult Pipelining()
+		{
+			IDatabase redis = _connection.GetDatabase();
+
+			var task1 = redis.StringGetAsync("customer:1");
+			var task2 = redis.StringGetAsync("customer:2");
+
+			// libovolný C# kód nezávislý na výsledku
+
+			var customer1 = redis.Wait(task1);
+			var customer2 = redis.Wait(task2);
+
+			return Content(customer1 + " " + customer2);
+		}
+	}
 }

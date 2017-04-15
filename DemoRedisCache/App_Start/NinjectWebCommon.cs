@@ -69,7 +69,7 @@ namespace DemoRedisCache.App_Start
 			ConfigurationOptions options = ConfigurationOptions.Parse(redisConnectionString);
 			options.AbortOnConnectFail = false;
 			options.ConnectRetry = 3;
-			options.ConnectTimeout = 2000;
+			options.ConnectTimeout = 3000;
 			kernel.Bind<ConnectionMultiplexer>().ToMethod(x => ConnectionMultiplexer.Connect(options)).InSingletonScope();
         }        
     }
