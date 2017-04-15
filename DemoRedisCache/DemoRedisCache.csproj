@@ -137,7 +137,6 @@
     <Content Include="Views\Demo\Prehled.cshtml" />
     <Content Include="Views\Demo\_Layout.cshtml" />
     <Content Include="Views\Demo\OutputCaching.cshtml" />
-    <Content Include="Views\Demo\Indexing.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

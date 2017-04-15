@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
@@ -115,42 +116,23 @@ namespace DemoRedisCache.Controllers
 		/// <summary>
 		/// Indexování množiny dat
 		/// </summary>
-		public ActionResult Indexing(string firstName, string lastName)
+		public ActionResult Indexing()
 		{
-			string key = "homepage:filtered:" + firstName + "-" + lastName;
-
+			string value = "M";
 			IDatabase redis = _connection.GetDatabase();
 
-			var set = redis.SetMembers(key);
-			if (set.Length > 0)
+			List<Person> data1 = Database.All.Where(x => x.FirstName.Contains(value) || x.LastName.Contains(value)).ToList();
+			redis.StringSet("search:" + value, JsonConvert.SerializeObject(data1.Select(x => x.Id).ToArray()));
+
+			RedisValue searchResult = redis.StringGet("search:" + value);
+			if (!searchResult.IsNull)
 			{
-				var ids = set.Select(x => x.ToString());
-				var result = Database.All.Where(x => ids.Contains(x.Id.ToString()));
-
-				return View(result.Take(5).ToList());
+				List<int> ids = JsonConvert.DeserializeObject<List<int>>(searchResult);
+				List<Person> data2 = Database.All.Where(x => ids.Contains(x.Id)).ToList();
 			}
-			else
-			{
-				var result = Database.All;
-				if (!string.IsNullOrEmpty(firstName))
-				{
-					result = result.Where(x => x.FirstName.Contains(firstName));
 
-				}
-				if (!string.IsNullOrEmpty(lastName))
-				{
-					result = result.Where(x => x.LastName.Contains(lastName));
-				}
-
-				RedisValue[] redisValues = result.Take(5).Select(x => (RedisValue)x.Id.ToString()).ToArray();
-				if (redisValues.Length > 0)
-				{
-					redis.SetAdd(key, redisValues);
-				}
-
-				return View(result.Take(5).ToList());
-			}
-        }
+			return Content("");
+		}
 
 		/// <summary>
 		/// Transakce
