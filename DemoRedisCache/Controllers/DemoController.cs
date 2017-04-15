@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using DemoRedisCache.Entities;
@@ -226,7 +227,35 @@ namespace DemoRedisCache.Controllers
 			var customer1 = redis.Wait(task1);
 			var customer2 = redis.Wait(task2);
 
+			ISubscriber subscriber = _connection.GetSubscriber();
+			subscriber.Subscribe("chat", (channel, json) => {
+				var message = JsonConvert.DeserializeObject<Message>(json);
+
+				Debug.WriteLine(message.Title);
+			});
+
+			subscriber.Publish("chat", JsonConvert.SerializeObject(new Message {Title = "Test"}));
+
 			return Content(customer1 + " " + customer2);
+		}
+
+		public ActionResult MessageBroker()
+		{
+			ISubscriber subscriber = _connection.GetSubscriber();
+			subscriber.Subscribe("chat", (channel, json) => {
+				var message = JsonConvert.DeserializeObject<Message>(json);
+
+				Debug.WriteLine(message.Title);
+			});
+
+			subscriber.Publish("chat", JsonConvert.SerializeObject(new Message { Title = "Test" }));
+
+			return Content("");
+		}
+
+		public class Message
+		{
+			public string Title { get; set; }
 		}
 	}
 }
