@@ -223,8 +223,6 @@ namespace DemoRedisCache.Controllers
 			var task1 = redis.StringGetAsync("customer:1");
 			var task2 = redis.StringGetAsync("customer:2");
 
-			// libovolný C# kód nezávislý na výsledku
-
 			var customer1 = redis.Wait(task1);
 			var customer2 = redis.Wait(task2);
 
